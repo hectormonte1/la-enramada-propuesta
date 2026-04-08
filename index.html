@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Enramada · Seguimos aquí desde 1977</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #faf6f0;
+      --bg-warm:   #f2e8d9;
+      --surface:   #fffdf9;
+      --ink:       #1a0e06;
+      --ink-2:     #4a3728;
+      --ink-3:     #7a6355;
+      --rust:      #b94e1b;
+      --rust-lt:   #d9693a;
+      --gold:      #c8922a;
+      --gold-lt:   #e8b84a;
+      --cream:     #f5ead8;
+      --border:    rgba(26,14,6,.1);
+      --shadow:    rgba(100,50,20,.12);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden;background:var(--bg)}
+    body{font-family:'DM Sans',sans-serif;color:var(--ink)}
+
+    /* ── DECK ── */
+    .deck{width:100vw;height:100vh;position:relative;overflow:hidden}
+    .slide{
+      position:absolute;inset:0;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;
+      transition:opacity .6s ease, transform .6s ease;
+      transform:translateY(18px);
+      overflow:hidden;
+    }
+    .slide.active{opacity:1;pointer-events:all;transform:translateY(0)}
+
+    /* ── BG TEXTURES ── */
+    .slide-bg{position:absolute;inset:0;z-index:0}
+    .slide-bg::before{
+      content:'';position:absolute;inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.028'/%3E%3C/svg%3E");
+      background-size:300px;
+      opacity:.4;
+      mix-blend-mode:multiply;
+    }
+    .slide-bg::after{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 50% 0%,rgba(200,146,42,.08) 0%,transparent 70%),
+                 radial-gradient(ellipse at 100% 100%,rgba(185,78,27,.06) 0%,transparent 60%);
+    }
+
+    /* ── CONTENT ── */
+    .content{
+      position:relative;z-index:2;
+      width:100%;max-width:1100px;
+      padding:clamp(2rem,4vw,4rem) clamp(1.5rem,4vw,4rem);
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .kicker{
+      font-family:'DM Sans',sans-serif;
+      font-weight:600;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;
+      color:var(--rust);margin-bottom:1rem;display:flex;align-items:center;gap:.6rem;
+    }
+    .kicker::before{content:'';display:block;width:32px;height:2px;background:var(--rust);border-radius:2px}
+    h1,h2{font-family:'DM Serif Display',serif;line-height:1.12;letter-spacing:-.01em;color:var(--ink)}
+    h1{font-size:clamp(2.8rem,6vw,5.2rem);font-weight:400}
+    h2{font-size:clamp(1.9rem,3.5vw,3rem);font-weight:400}
+    h3{font-family:'DM Sans',sans-serif;font-size:1.05rem;font-weight:700;color:var(--ink)}
+    p{color:var(--ink-2);line-height:1.65}
+    em{font-style:italic;font-family:'Libre Baskerville',serif}
+
+    /* ── CARDS ── */
+    .card{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow:0 4px 24px var(--shadow),0 1px 3px rgba(0,0,0,.04);
+    }
+    .card-warm{background:var(--cream);border-color:rgba(200,146,42,.2)}
+
+    /* ── BADGE / PILL ── */
+    .badge{
+      display:inline-flex;align-items:center;gap:.4rem;
+      background:var(--rust);color:#fff;
+      font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+      padding:.3rem .8rem;border-radius:999px;
+    }
+    .badge-gold{background:var(--gold)}
+
+    /* ── PRICE ── */
+    .price{
+      font-family:'DM Serif Display',serif;font-size:2.6rem;
+      color:var(--rust);line-height:1;
+    }
+    .price sup{font-size:1rem;vertical-align:top;margin-top:.4rem;display:inline-block}
+    .price sub{font-size:.9rem;color:var(--ink-3);font-family:'DM Sans',sans-serif;font-weight:400}
+
+    /* ── DIVIDER ── */
+    .divider{width:48px;height:3px;background:linear-gradient(90deg,var(--rust),var(--gold));border-radius:2px;margin:1.2rem 0}
+
+    /* ── TIMELINE ── */
+    .tl-wrap{position:relative;padding-left:52px}
+    .tl-line{
+      position:absolute;left:18px;top:12px;bottom:12px;width:2px;
+      background:linear-gradient(180deg,var(--rust) 0%,var(--gold) 100%);
+      border-radius:2px;
+    }
+    .tl-dot{
+      position:absolute;left:0;top:50%;transform:translateY(-50%);
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface);border:2px solid var(--rust);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.8rem;font-weight:700;color:var(--rust);
+    }
+
+    /* ── TWO-COL CHECK LIST ── */
+    .check-item{display:flex;align-items:flex-start;gap:.6rem;padding:.5rem 0;color:var(--ink-2)}
+    .check-item::before{content:'';flex-shrink:0;width:7px;height:7px;border-radius:50%;margin-top:.5rem}
+    .check-yes::before{background:var(--rust)}
+    .check-no::before{background:rgba(26,14,6,.2)}
+
+    /* ── ANIMATIONS ── */
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .4s ease, transform .4s ease}
+
+    /* ── DECORATIVE LINES ── */
+    .deco-rule{
+      position:absolute;width:1px;background:linear-gradient(180deg,transparent,rgba(185,78,27,.18),transparent);
+      z-index:1;pointer-events:none;
+    }
+
+    /* ── NAV ── */
+    .nav{
+      position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+      display:flex;align-items:center;gap:14px;
+      background:rgba(250,246,240,.92);backdrop-filter:blur(14px);
+      padding:10px 22px;border-radius:40px;
+      border:1px solid var(--border);
+      box-shadow:0 8px 32px rgba(100,50,20,.1);
+      z-index:100;
+    }
+    .nav-btn{
+      width:36px;height:36px;border:1px solid var(--border);
+      background:var(--surface);color:var(--rust);border-radius:50%;
+      font-size:1.1rem;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:background .2s,border-color .2s;
+    }
+    .nav-btn:hover{background:var(--rust);color:#fff;border-color:var(--rust)}
+    .dots{display:flex;gap:7px}
+    .dot{width:8px;height:8px;border-radius:50%;background:rgba(26,14,6,.15);cursor:pointer;transition:all .25s}
+    .dot.active{background:var(--rust);transform:scale(1.3)}
+    .counter{font-size:.75rem;color:var(--ink-3);min-width:38px;text-align:center;font-weight:500}
+
+    /* ── SLIDE 1 HERO ── */
+    #s1{background:var(--bg)}
+    .year-stamp{
+      font-family:'DM Serif Display',serif;font-style:italic;
+      font-size:clamp(7rem,18vw,17rem);line-height:1;
+      color:transparent;
+      -webkit-text-stroke:1px rgba(185,78,27,.14);
+      position:absolute;right:-2vw;bottom:-3vh;
+      pointer-events:none;z-index:0;user-select:none;
+    }
+    .hero-tag{
+      display:inline-flex;align-items:center;gap:.5rem;
+      border:1px solid rgba(185,78,27,.3);
+      padding:.4rem 1rem;border-radius:999px;
+      font-size:.78rem;font-weight:500;color:var(--rust);
+      margin-bottom:1.8rem;
+    }
+    .hero-tag::before{content:'●';font-size:.4rem;animation:blink 1.8s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* ── SLIDE 9 PRICING – tarjetas equilibradas ── */
+    .pricing-card-featured{
+      background:var(--surface);
+      border-color:rgba(185,78,27,.25);
+      position:relative;overflow:hidden;
+    }
+    .pricing-card-featured::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(circle at 80% 20%,rgba(200,146,42,.06) 0%,transparent 70%);
+    }
+
+    /* ── SLIDE 10 CLOSE ── */
+    #s11{background:var(--ink)}
+    #s11 .slide-bg::before{opacity:.06}
+    #s11 .kicker{color:var(--gold-lt)}
+    #s11 .kicker::before{background:var(--gold-lt)}
+    #s11 h2,#s11 p{color:#fff}
+    #s11 p{color:rgba(255,255,255,.7)}
+    .close-rule{height:1px;background:linear-gradient(90deg,transparent,rgba(232,184,74,.4),transparent);margin:2rem 0}
+
+    @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.2s!important}}
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- SLIDE 1 · PORTADA -->
+  <div class="slide active" id="s1" data-slide="1">
+    <div class="slide-bg"></div>
+    <div class="deco-rule" style="left:18%;top:0;bottom:0"></div>
+    <div class="deco-rule" style="right:22%;top:0;bottom:0"></div>
+    <div class="year-stamp">1977</div>
+    <div class="content" style="max-width:860px">
+      <div class="hero-tag reveal">Propuesta de reactivación digital · 2026</div>
+      <p class="kicker reveal">La Enramada</p>
+      <h1 class="reveal" style="max-width:780px;margin-bottom:1.4rem">
+        La tradición<br><em>sigue viva</em><br>desde 1977.
+      </h1>
+      <div class="divider reveal"></div>
+      <p class="reveal" style="max-width:560px;font-size:1.05rem;margin-top:1rem">
+        Una estrategia de reactivación digital para que la historia que ya existe vuelva a ser visible, confiable y presente.
+      </p>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 · DIAGNÓSTICO (mejorado con datos) -->
+  <div class="slide" id="s2" data-slide="2">
+    <div class="slide-bg"></div>
+    <div class="content">
+      <p class="kicker reveal">Diagnóstico</p>
+      <h2 class="reveal" style="margin-bottom:.5rem">El negocio funciona.<br>La presencia digital, no.</h2>
+      <p class="reveal" style="margin-bottom:2.5rem;max-width:640px">Quien ya conoce La Enramada puede recordarla. Quien la busca <em>hoy</em> en Google necesita encontrar señales claras de que sigue abierta, vigente y recomendable. Esas señales hoy no están.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem">
+        <div class="card p-6 reveal" style="padding:1.8rem">
+          <div style="font-family:'DM Serif Display',serif;font-size:3rem;color:var(--rust);line-height:1;margin-bottom:.6rem">1977</div>
+          <h3 style="margin-bottom:.4rem">Historia real</h3>
+          <p style="font-size:.9rem">Casi 50 años de tradición. No hay que inventar la marca; hay que hacerla visible otra vez.</p>
+        </div>
+        <div class="card p-6 reveal" style="padding:1.8rem">
+          <div style="font-family:'DM Serif Display',serif;font-size:3rem;color:var(--rust);line-height:1;margin-bottom:.6rem">✓ Ventas</div>
+          <h3 style="margin-bottom:.4rem">Producto probado</h3>
+          <p style="font-size:.9rem">El mostrador confirma demanda activa. El problema no es el producto; es el sistema digital.</p>
+        </div>
+        <div class="card card-warm reveal" style="padding:1.8rem;border-left:4px solid var(--rust)">
+          <div style="font-family:'DM Serif Display',serif;font-size:3rem;color:var(--rust);line-height:1;margin-bottom:.6rem">Hoy</div>
+          <h3 style="margin-bottom:.4rem">La brecha</h3>
+          <p style="font-size:.9rem">Perfiles desactualizados, pocas reseñas recientes, Google Maps sin optimizar. La marca existe; el sistema digital, no.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 · PLATAFORMA DE MARCA -->
+  <div class="slide" id="s3" data-slide="3">
+    <div class="slide-bg"></div>
+    <div class="deco-rule" style="left:20%;top:0;bottom:0"></div>
+    <div class="content">
+      <p class="kicker reveal">Plataforma de marca</p>
+      <h2 class="reveal" style="margin-bottom:2rem">Qué se va a comunicar</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div class="card reveal" style="padding:2rem;grid-row:span 2">
+          <span class="badge" style="margin-bottom:1.2rem">Idea madre</span>
+          <p style="font-family:'DM Serif Display',serif;font-size:2rem;line-height:1.2;color:var(--ink);margin-bottom:1rem">
+            "La tradición sigue viva desde 1977."
+          </p>
+          <div class="divider"></div>
+          <p style="font-size:.95rem">Es el eje de autoridad, permanencia y legado. La Enramada no habla como marca nueva; habla como un lugar de toda la vida que <em>sigue respondiendo bien</em>.</p>
+        </div>
+        <div class="card card-warm reveal" style="padding:1.6rem">
+          <span class="badge badge-gold" style="margin-bottom:.8rem">Mensaje de apoyo</span>
+          <p style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.6rem">"Seguimos aquí."</p>
+          <p style="font-size:.88rem">Prueba de vigencia: abiertos, respondiendo y siendo referencia local.</p>
+        </div>
+        <div class="card reveal" style="padding:1.6rem">
+          <h3 style="margin-bottom:.5rem">Tono</h3>
+          <p style="font-size:.88rem">Tradicional, popular, confiable, vigente. Nunca arrogante. Nunca "barato". Siempre cercano.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 · GOOGLE MAPS (nuevo slide prioritario) -->
+  <div class="slide" id="s4" data-slide="4">
+    <div class="slide-bg"></div>
+    <div class="content">
+      <p class="kicker reveal">Canal prioritario #1</p>
+      <h2 class="reveal" style="margin-bottom:.6rem">Google Maps es la<br><em>palanca más importante</em>.</h2>
+      <p class="reveal" style="margin-bottom:2rem;max-width:640px">Para un negocio local de comida, Google Business Profile decide si el cliente llega o no llega. Es donde se busca, se califica y se decide. Es el activo con mayor ROI inmediato — antes que Instagram o Facebook.</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem">
+        <div class="card reveal" style="padding:1.4rem;text-align:center">
+          <div style="font-size:2rem;margin-bottom:.5rem">🔍</div>
+          <h3 style="font-size:.92rem;margin-bottom:.3rem">Descubrimiento</h3>
+          <p style="font-size:.82rem">"Carnitas cerca de mí" — aparecerás o no aparecerás.</p>
+        </div>
+        <div class="card reveal" style="padding:1.4rem;text-align:center">
+          <div style="font-size:2rem;margin-bottom:.5rem">⭐</div>
+          <h3 style="font-size:.92rem;margin-bottom:.3rem">Reseñas recientes</h3>
+          <p style="font-size:.82rem">Sin actividad reciente, el negocio parece cerrado aunque esté abierto.</p>
+        </div>
+        <div class="card reveal" style="padding:1.4rem;text-align:center">
+          <div style="font-size:2rem;margin-bottom:.5rem">📸</div>
+          <h3 style="font-size:.92rem;margin-bottom:.3rem">Fotos actualizadas</h3>
+          <p style="font-size:.82rem">La primera impresión del cliente nuevo es una foto en Maps.</p>
+        </div>
+        <div class="card card-warm reveal" style="padding:1.4rem;text-align:center;border:2px solid var(--rust)">
+          <div style="font-size:2rem;margin-bottom:.5rem">🎯</div>
+          <h3 style="font-size:.92rem;margin-bottom:.3rem">Acción inmediata</h3>
+          <p style="font-size:.82rem">Optimizar Maps en semana 1. Es la señal más urgente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 · CINCO PILARES -->
+  <div class="slide" id="s5" data-slide="5">
+    <div class="slide-bg"></div>
+    <div class="content">
+      <p class="kicker reveal">Estrategia de contenido</p>
+      <h2 class="reveal" style="margin-bottom:2rem">Cinco pilares de comunicación</h2>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.9rem">
+        <div class="card reveal" style="padding:1.4rem">
+          <div style="font-size:1.8rem;margin-bottom:.7rem">🏺</div>
+          <h3 style="margin-bottom:.4rem;font-size:.95rem">Tradición viva</h3>
+          <p style="font-size:.82rem">Historia, receta, personal y permanencia.</p>
+        </div>
+        <div class="card reveal" style="padding:1.4rem">
+          <div style="font-size:1.8rem;margin-bottom:.7rem">🤤</div>
+          <h3 style="margin-bottom:.4rem;font-size:.95rem">Antojo real</h3>
+          <p style="font-size:.82rem">Carnitas, lonches, porción y sabor visible.</p>
+        </div>
+        <div class="card card-warm reveal" style="padding:1.4rem;border:2px solid var(--rust)">
+          <div style="font-size:1.8rem;margin-bottom:.7rem">📍</div>
+          <h3 style="margin-bottom:.4rem;font-size:.95rem">Seguimos aquí</h3>
+          <p style="font-size:.82rem">Horarios, ubicación, estacionamiento.</p>
+        </div>
+        <div class="card reveal" style="padding:1.4rem">
+          <div style="font-size:1.8rem;margin-bottom:.7rem">👨‍👩‍👧</div>
+          <h3 style="margin-bottom:.4rem;font-size:.95rem">Experiencia local</h3>
+          <p style="font-size:.82rem">Mostrador, salón, servicio, fechas fuertes.</p>
+        </div>
+        <div class="card reveal" style="padding:1.4rem">
+          <div style="font-size:1.8rem;margin-bottom:.7rem">⭐</div>
+          <h3 style="margin-bottom:.4rem;font-size:.95rem">Confianza digital</h3>
+          <p style="font-size:.82rem">Reseñas, respuestas, Maps y contenido reciente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 · PLAN 30/60/90 (con duración explícita) -->
+  <div class="slide" id="s6" data-slide="6">
+    <div class="slide-bg"></div>
+    <div class="content">
+      <p class="kicker reveal">Plan de trabajo</p>
+      <h2 class="reveal" style="margin-bottom:2rem">Tres etapas. Noventa días.</h2>
+      <div class="tl-wrap">
+        <div class="tl-line"></div>
+        <div style="display:flex;flex-direction:column;gap:1.1rem">
+          <div class="card reveal" style="padding:1.6rem;position:relative;margin-left:1rem">
+            <div class="tl-dot">1</div>
+            <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem">
+              <h3>Días 1–30 · Orden y reactivación</h3>
+              <span class="badge">Urgente</span>
+            </div>
+            <p style="font-size:.9rem">Ordenar perfiles y Google Maps. Definir tono, mensajes y calendario. Lanzar narrativa. Publicar con constancia. Primera oleada de reseñas.</p>
+          </div>
+          <div class="card reveal" style="padding:1.6rem;position:relative;margin-left:1rem">
+            <div class="tl-dot" style="border-color:var(--gold);color:var(--gold)">2</div>
+            <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem">
+              <h3>Días 31–60 · Consistencia y prueba social</h3>
+            </div>
+            <p style="font-size:.9rem">Reels y stories simples. Mostrar cocina, producto y equipo. Promociones tácticas en días clave. Seguir empujando reseñas. Revisión de desempeño.</p>
+          </div>
+          <div class="card reveal" style="padding:1.6rem;position:relative;margin-left:1rem">
+            <div class="tl-dot" style="border-color:var(--ink-3);color:var(--ink-3)">3</div>
+            <h3 style="margin-bottom:.5rem">Días 61–90 · Optimización</h3>
+            <p style="font-size:.9rem">Detectar formatos ganadores. Afinar pauta local. Evaluar WhatsApp y automatización ligera según resultados.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7 · ALCANCE DEL SERVICIO -->
+  <div class="slide" id="s7" data-slide="7">
+    <div class="slide-bg"></div>
+    <div class="content">
+      <p class="kicker reveal">Servicio base</p>
+      <h2 class="reveal" style="margin-bottom:.5rem">Qué sí incluye<br>y qué no.</h2>
+      <p class="reveal" style="margin-bottom:2rem;max-width:560px;font-size:.95rem">El servicio base es dirección estratégica mensual, no ejecución full-service. Eso protege el valor del trabajo y define expectativas desde el inicio.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div class="card reveal" style="padding:1.8rem">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem">
+            <div style="width:10px;height:10px;border-radius:50%;background:var(--rust)"></div>
+            <h3>Incluye en base</h3>
+          </div>
+          <div class="check-item check-yes"><span>Dirección estratégica mensual</span></div>
+          <div class="check-item check-yes"><span>Calendario y línea de comunicación</span></div>
+          <div class="check-item check-yes"><span>Guía editorial y mensajes clave</span></div>
+          <div class="check-item check-yes"><span>Revisión de perfiles y Google Maps</span></div>
+          <div class="check-item check-yes"><span>Seguimiento general de canales</span></div>
+          <div class="check-item check-yes"><span>Reporte mensual con ajustes</span></div>
+        </div>
+        <div class="card card-warm reveal" style="padding:1.8rem">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem">
+            <div style="width:10px;height:10px;border-radius:50%;background:var(--ink-3)"></div>
+            <h3>No incluye en base</h3>
+          </div>
+          <div class="check-item check-no"><span>Community management diario</span></div>
+          <div class="check-item check-no"><span>Grabación y edición de contenido</span></div>
+          <div class="check-item check-no"><span>Diseño o producción intensiva</span></div>
+          <div class="check-item check-no"><span>Gestión pesada de pauta</span></div>
+          <div class="check-item check-no"><span>Automatizaciones avanzadas o bots</span></div>
+          <p style="font-size:.82rem;color:var(--ink-3);margin-top:1rem;font-style:italic">Todo lo anterior puede activarse como add-on según nivel de ejecución requerido.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 · LO QUE EL CLIENTE APORTA -->
+  <div class="slide" id="s8" data-slide="8">
+    <div class="slide-bg"></div>
+    <div class="content">
+      <p class="kicker reveal">Requisitos del cliente</p>
+      <h2 class="reveal" style="margin-bottom:.6rem">Para que funcione,<br>el negocio también pone.</h2>
+      <p class="reveal" style="margin-bottom:2rem;font-size:.95rem;max-width:620px">Ninguna estrategia opera sola. Se necesita una base mínima de colaboración para que los resultados se den.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+        <div class="card reveal" style="padding:1.5rem">
+          <div style="font-size:1.6rem;margin-bottom:.6rem">👤</div>
+          <h3 style="margin-bottom:.4rem">Responsable interno</h3>
+          <p style="font-size:.85rem">Una persona asignada para comunicación, aprobaciones y tiempos de respuesta.</p>
+        </div>
+        <div class="card reveal" style="padding:1.5rem">
+          <div style="font-size:1.6rem;margin-bottom:.6rem">🔑</div>
+          <h3 style="margin-bottom:.4rem">Accesos</h3>
+          <p style="font-size:.85rem">Instagram, Facebook y Google Maps. Sin accesos, no hay ejecución.</p>
+        </div>
+        <div class="card reveal" style="padding:1.5rem">
+          <div style="font-size:1.6rem;margin-bottom:.6rem">📷</div>
+          <h3 style="margin-bottom:.4rem">Material base</h3>
+          <p style="font-size:.85rem">Fotos y video propios del negocio, o presupuesto para contratar creador.</p>
+        </div>
+        <div class="card reveal" style="padding:1.5rem">
+          <div style="font-size:1.6rem;margin-bottom:.6rem">📆</div>
+          <h3 style="margin-bottom:.4rem">Información operativa</h3>
+          <p style="font-size:.85rem">Horarios, promos, días clave, cambios de menú y prioridades del negocio.</p>
+        </div>
+        <div class="card reveal" style="padding:1.5rem">
+          <div style="font-size:1.6rem;margin-bottom:.6rem">💬</div>
+          <h3 style="margin-bottom:.4rem">Respuesta a mensajes</h3>
+          <p style="font-size:.85rem">Capacidad de responder o delegar a alguien esa función en redes.</p>
+        </div>
+        <div class="card card-warm reveal" style="padding:1.5rem;border:1.5px solid var(--gold)">
+          <div style="font-size:1.6rem;margin-bottom:.6rem">📢</div>
+          <h3 style="margin-bottom:.4rem">Apertura a pauta</h3>
+          <p style="font-size:.85rem">Disposición mínima de invertir en alcance local cuando sea conveniente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9 · PRECIOS (mejorado con justificación de valor) -->
+  <div class="slide" id="s9" data-slide="9">
+    <div class="slide-bg"></div>
+    <div class="content">
+      <p class="kicker reveal">Inversión</p>
+      <h2 class="reveal" style="margin-bottom:.5rem">Tres niveles de<br>acompañamiento.</h2>
+      <p class="reveal" style="margin-bottom:2rem;font-size:.95rem;max-width:580px">Mensualidad base con capas de soporte. Empieza donde tiene sentido y crece cuando el negocio lo requiera.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem">
+        <div class="card reveal" style="padding:2rem">
+          <h3 style="margin-bottom:.3rem">Base estratégico</h3>
+          <p style="font-size:.8rem;color:var(--ink-3);margin-bottom:1rem">Ideal para arrancar ordenados</p>
+          <div class="price" style="margin-bottom:1rem"><sup>$</sup>4,800<sub>/mes</sub></div>
+          <div class="divider" style="margin:.8rem 0"></div>
+          <p style="font-size:.85rem">Estrategia, calendario, guía editorial, revisión de perfiles, Google Maps y reporte mensual.</p>
+        </div>
+        <div class="card pricing-card-featured reveal" style="padding:2rem">
+          <h3 style="margin-bottom:.3rem">Crecimiento guiado</h3>
+          <p style="font-size:.8rem;color:var(--ink-3);margin-bottom:1rem">Acompañamiento y seguimiento adicional</p>
+          <div class="price" style="margin-bottom:1rem"><sup>$</sup>6,500<sub>/mes</sub></div>
+          <div class="divider" style="margin:.8rem 0"></div>
+          <p style="font-size:.85rem">Todo lo base más revisión semanal y soporte de implementación con el equipo.</p>
+        </div>
+        <div class="card reveal" style="padding:2rem">
+          <h3 style="margin-bottom:.3rem">Acompañamiento integral</h3>
+          <p style="font-size:.8rem;color:var(--ink-3);margin-bottom:1rem">Dirección + coordinación operativa</p>
+          <div class="price" style="margin-bottom:1rem"><sup>$</sup>8,500<sub>/mes</sub></div>
+          <div class="divider" style="margin:.8rem 0"></div>
+          <p style="font-size:.85rem">Todo lo anterior más coordinación cercana con la ejecución externa del proyecto.</p>
+        </div>
+      </div>
+      <p style="font-size:.82rem;color:var(--ink-3);margin-top:1.4rem;text-align:center;font-style:italic" class="reveal">La pauta va por separado. Los servicios adicionales se definen según la necesidad operativa del proyecto.</p>
+    </div>
+  </div>
+
+
+  <!-- SLIDE 10 · ADD-ONS -->
+  <div class="slide" id="s10" data-slide="10">
+    <div class="slide-bg"></div>
+    <div class="content" style="max-width:960px">
+      <p class="kicker reveal">Servicios adicionales</p>
+      <h2 class="reveal" style="margin-bottom:.5rem">Add-ons según<br>nivel de ejecución.</h2>
+      <p class="reveal" style="margin-bottom:2rem;font-size:.95rem;max-width:620px">Estos servicios no van incluidos en la mensualidad base. Se activan según el nivel real de ejecución que requiera el negocio — uno, varios o ninguno, dependiendo de lo que el proyecto demande.</p>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem">
+        <div class="card reveal" style="padding:1.6rem 2rem;display:flex;flex-direction:column;gap:.5rem">
+          <p style="font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)">Creador de contenido</p>
+          <p class="price" style="font-size:1.7rem"><sup style="font-size:.85rem">$</sup>3,500 <span style="font-size:1rem;color:var(--ink-3)">– 8,000</span><sub>/mes</sub></p>
+          <p style="font-size:.84rem;color:var(--ink-3)">Producción de foto y video propio para redes sociales y Google.</p>
+        </div>
+        <div class="card reveal" style="padding:1.6rem 2rem;display:flex;flex-direction:column;gap:.5rem">
+          <p style="font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)">Community management</p>
+          <p class="price" style="font-size:1.7rem"><sup style="font-size:.85rem">$</sup>3,000 <span style="font-size:1rem;color:var(--ink-3)">– 6,000</span><sub>/mes</sub></p>
+          <p style="font-size:.84rem;color:var(--ink-3)">Gestión de comentarios, mensajes, reseñas y presencia activa en plataformas.</p>
+        </div>
+        <div class="card reveal" style="padding:1.6rem 2rem;display:flex;flex-direction:column;gap:.5rem">
+          <p style="font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)">Diseño gráfico</p>
+          <p class="price" style="font-size:1.7rem"><sup style="font-size:.85rem">$</sup>2,000 <span style="font-size:1rem;color:var(--ink-3)">– 5,000</span><sub>/mes</sub></p>
+          <p style="font-size:.84rem;color:var(--ink-3)">Piezas para redes, stories, cartelería y materiales de temporada.</p>
+        </div>
+        <div class="card reveal" style="padding:1.6rem 2rem;display:flex;flex-direction:column;gap:.5rem">
+          <p style="font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)">Gestión de pauta</p>
+          <p class="price" style="font-size:1.7rem"><sup style="font-size:.85rem">$</sup>2,500 <span style="font-size:1rem;color:var(--ink-3)">– 5,000</span><sub>/mes</sub></p>
+          <p style="font-size:.84rem;color:var(--ink-3)">Configuración, seguimiento y optimización de anuncios pagados. <em>La inversión en anuncios va por separado.</em></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11 · CIERRE CON CTA -->
+  <div class="slide" id="s11" data-slide="11">
+    <div class="slide-bg"></div>
+    <div class="deco-rule" style="left:15%;top:0;bottom:0;background:linear-gradient(180deg,transparent,rgba(200,146,42,.15),transparent)"></div>
+    <div class="content" style="max-width:800px;text-align:center">
+      <p class="kicker reveal" style="justify-content:center">Siguiente paso</p>
+      <h2 class="reveal" style="font-size:clamp(2.2rem,4.5vw,3.8rem);margin-bottom:1rem;color:#fff">
+        La Enramada no necesita reinventarse.<br><em style="color:var(--gold-lt)">Necesita volver a verse.</em>
+      </h2>
+      <div class="close-rule reveal"></div>
+      <p class="reveal" style="font-size:1.05rem;max-width:620px;margin:0 auto 2.5rem">
+        El valor está en construir orden, presencia y señales digitales que ayuden a que la marca vuelva a estar presente donde hoy se decide la atención local: Google, Instagram y la conversación del barrio.
+      </p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap" class="reveal">
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:1.4rem 2rem;text-align:left">
+          <p style="font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-lt);margin-bottom:.3rem">Primer mes de resultados visibles</p>
+          <p style="font-size:.92rem;color:rgba(255,255,255,.7)">Perfiles activos · Google Maps optimizado · Reseñas nuevas · Calendario funcionando</p>
+        </div>
+      </div>
+      <p style="margin-top:2.5rem;font-size:.85rem;color:rgba(255,255,255,.35)" class="reveal">¿Arrancamos esta semana?</p>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn" onclick="move(-1)">‹</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" onclick="move(1)">›</button>
+  <span class="counter" id="ctr">1 / 10</span>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let cur = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_,i)=>{
+    const d = document.createElement('div');
+    d.className='dot'+(i===0?' active':'');
+    d.onclick=()=>go(i);
+    dotsEl.appendChild(d);
+  });
+
+  function reveal(slide){
+    slide.querySelectorAll('.reveal').forEach((el,i)=>{
+      el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(16px)';
+      el.offsetHeight;
+      const d=i*.07;
+      el.style.transition=`opacity .4s ease ${d}s,transform .4s ease ${d}s`;
+      el.style.opacity='1';el.style.transform='none';
+    });
+  }
+
+  function go(n){
+    slides[cur].classList.remove('active');
+    cur=(n+total)%total;
+    slides[cur].classList.add('active');
+    document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+    document.getElementById('ctr').textContent=(cur+1)+' / '+total;
+    reveal(slides[cur]);
+  }
+
+  function move(d){go(cur+d)}
+
+  // Keys & swipe
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();move(1)}
+    if(e.key==='ArrowLeft'){e.preventDefault();move(-1)}
+  });
+  let tx=0;
+  document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>48)move(d>0?1:-1)});
+
+  // Init first slide
+  reveal(slides[0]);
+</script>
+</body>
+</html>
